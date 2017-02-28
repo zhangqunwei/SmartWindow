@@ -35,7 +35,7 @@ CNotify MyBuzzer(3);	// 蜂鸣器
 Servo  myservo;			// 伺服电机
 CStepperMotor MyStepperMotor(11, 12, 13);	// 步进电机 (byte clk, byte cw, byte en)
 											
-bool WindowState = SHUT_WINDOW;
+int WindowState = SHUT_WINDOW;
 
 /////////////////////////////////////////////////////////////////////////////
 // 函数声明
@@ -48,6 +48,7 @@ CSensor* sensor[5] = { &MySmoke, &MyRaindrop, &MyPeople, &MyFlame ,&MyDht11 };
 void setup() {
   // put your setup code here, to run once:
 	myservo.attach(6);	// 伺服电机引脚定义
+	Serial.begin(9600);
 }
 
 void loop() {
@@ -58,9 +59,6 @@ void loop() {
 	{
 		sensor[i]->show();
 	}
-	Serial.println();
-	Serial.println("************************************************************************************************************");
-	Serial.println();
 
 	// 伺服电机部分
 	//MyServoControl(360);
@@ -70,38 +68,46 @@ void loop() {
 	{
 		if (sensor[i]->monitor() == KEEP_WINDOW)
 		{
-			Serial.begin(9600);
-			Serial.print("***|	flag:\t");
-			Serial.print("keep window!");
+			Serial.print("***|  ");
+			Serial.print(i);
+			Serial.print(". flag:\t");
+			Serial.print("keep window!\t");
+			Serial.print(WindowState);
 			Serial.println();
 			NULL;
 		}
 		else if ((SHUT_WINDOW == sensor[i]->monitor()) && (WindowState == OPEN_WINDOW))
-		{	// 关窗
+		{	// 请求关窗
 			MyStepperMotor.control(2, CLOCKWISE, EN);	// 顺时针
 			//MyBuzzer.notify(15, 5);
 			//delay(200);
 			WindowState = SHUT_WINDOW;
-			Serial.begin(9600);
-			Serial.print("***|	flag:\t");
-			Serial.print("open window!");
+			Serial.print("***|  ");
+			Serial.print(i);
+			Serial.print(". flag:\t");
+			Serial.print("shut window!\t");
+			Serial.print(WindowState);
 			Serial.println();
 		}
 		else if ((OPEN_WINDOW == sensor[i]->monitor()) && (WindowState == SHUT_WINDOW))
-		{   // 开窗
+		{   // 请求开窗
 			MyStepperMotor.control(2, UNCLOCKWISE, EN);	// 逆时针
 			//MyBuzzer.notify(15, 5);
 			WindowState = OPEN_WINDOW;
-			Serial.begin(9600);
-			Serial.print("***|	flag:\t");
-			Serial.print("shut window!");
+			Serial.print("***|  ");
+			Serial.print(i);
+			Serial.print(". flag:\t");
+			Serial.print("open window!\t");
+			Serial.print(WindowState);
 			Serial.println();
 		}
 		else
-		{
-			Serial.begin(9600);
-			Serial.print("***|	flag:\t");
-			Serial.print("NULL!");
+		{	// 请求与窗子状态相同时不执行任何动作 
+			Serial.print("***|  ");
+			Serial.print(i);
+			Serial.print(". flag:\t");
+			Serial.print("NULL!\t\t");
+			Serial.print(WindowState);
 			Serial.println();
 			NULL;
 		}
@@ -110,7 +116,10 @@ void loop() {
 		//	NULL;
 		//}
 	}
-
+	Serial.println();
+	Serial.println();
+	Serial.println("************************************************************************************************************");
+	Serial.println();
 	//// 检测到人 
 	//if (MyPeople.monitor() == true)
 	//{

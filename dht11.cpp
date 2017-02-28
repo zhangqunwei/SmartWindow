@@ -104,9 +104,11 @@ typedef	struct
 	int max;
 }ValueExtent;
 
-ValueExtent value[3] = { { 'T', 5, 25 },	// 温度的监控范围
-						 { 'H', 5, 80 },	// 湿度的监控范围
-						 { 'D', 0, 35 } };	// 露点的监控范围
+ValueExtent value[3] = {{ 'T', 5, 25 },	// 温度的监控范围
+						{ 'H', 5, 80 }, // 湿度的监控范围
+						{ 'D', 0, 35 } 	// 露点的监控范围
+						};	
+						 
 
 // Function: monitor()
 // Description: 监测温湿度
@@ -141,7 +143,6 @@ int Dht11::monitor()
 int Dht11::DetectonExtent(char m_value_type, int m_value_min, int m_value_max)
 {
 	// 监测最新值
-	read();
 	switch (m_value_type)
 	{
 	case 'H':
@@ -183,45 +184,42 @@ int Dht11::DetectonExtent(char m_value_type, int m_value_min, int m_value_max)
 // Return: 无
 void Dht11::show()
 {
-	Serial.begin(9600);
-	if (read() == DHT11_ERROR_CHECKSUM) 
+	read();
+	if (m_value == DHT11_ERROR_CHECKSUM) 
 		Serial.println("dht11 checksum error!");
 	else
 	{
 		Serial.print("***|	Dht11: ");
-		Serial.print("\tHumidity(%): ");
-		Serial.print((float)m_humidity, 2);
-		//Serial.print("   |   ");
 
 		Serial.print("\tTemperature (oC):");
 		Serial.print((float)m_temperature, 2);
-		//Serial.print(" / ");
 
 		Serial.print("\t(oF): ");
 		Serial.print(Fahrenheit(m_temperature), 2);
-		//Serial.print(" / ");
 
 		Serial.print("\t(K): ");
 		Serial.print(Kelvin(m_temperature), 2);
-		//Serial.print("  |  ");
+
+		Serial.print("\tHumidity(%): ");
+		Serial.print((float)m_humidity, 2);
 
 		Serial.print("\tDew PointFast(oC): ");
 		Serial.print(dewPointFast(m_temperature, m_humidity));
 
 		Serial.println();
-		//Serial.print("***|  ");
-		//for (int i = 0; i < 3; i++)
-		//{
-		//	Serial.print(value[i].type);
-		//	Serial.print(" (");
-		//	Serial.print(value[i].min);
-		//	Serial.print(", ");
-		//	Serial.print(value[i].max);
-		//	Serial.print(" )\t");
-		//}
-		//Serial.println();
+		Serial.print("***|  \t\t");
+		for (int i = 0; i < 3; i++)
+		{
+			Serial.print(value[i].type);
+			Serial.print(" (");
+			Serial.print(value[i].min);
+			Serial.print(", ");
+			Serial.print(value[i].max);
+			Serial.print(" )\t");
+		}
+		Serial.println();
 	}
-	delay(500);
+	delay(1000);
 }	// void Dht11::show() END
 
 // 显示露点

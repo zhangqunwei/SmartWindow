@@ -22,7 +22,7 @@
 
 #define OPEN_WINDOW 1
 #define SHUT_WINDOW 0
-#define KEEP_WINDOW -1
+#define KEEP_WINDOW 2
 
 // Class   	: CSensor
 // Function	: CSensor提供传感器的使用接口。

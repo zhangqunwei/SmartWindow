@@ -25,7 +25,6 @@ CPeople::~CPeople()
 {
 	detach();
 }
-// hello
 
 // Function: show()
 // Description: 显示
@@ -34,7 +33,7 @@ CPeople::~CPeople()
 // Return: 无
 void CPeople::show()
 {
-	Serial.begin(9600);
+	read();
 	Serial.print("***|	People:\t");
 	if (SHUT_WINDOW == monitor())
 		Serial.print("Danger!");
@@ -53,7 +52,7 @@ void CPeople::show()
 //			OPEN_WINDOW   没人
 int CPeople::monitor()
 {
-	if (true == digitalRead(m_pin))
+	if (true == m_value)
 		return SHUT_WINDOW;
 	else
 		return KEEP_WINDOW;

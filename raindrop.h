@@ -34,6 +34,7 @@ public:
 	~CRaindrop();
 
 public:
+	virtual int read();
 	virtual void show();
 	virtual int monitor();
 };

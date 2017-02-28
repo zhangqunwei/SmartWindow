@@ -34,9 +34,9 @@ CSmoke::~CSmoke()
 // Return: ÎÞ
 void CSmoke::show()
 {
-	Serial.begin(9600);
-	Serial.print("***|	Smoke:\t");
-	Serial.print(analogRead(m_pin));
+	read();
+	Serial.print("***|	Smoke:  ");
+	Serial.print(m_value);
 	Serial.print("\t");
 	Serial.print("max = 150");
 	Serial.println();
@@ -51,7 +51,7 @@ void CSmoke::show()
 //			SHUT_WINDOW  ¹Ø´°	
 int CSmoke::monitor()
 {
-	if (analogRead(m_pin) > SMOKE_VALUE_MAX)
+	if (m_value > SMOKE_VALUE_MAX)
 		return OPEN_WINDOW;
 	else
 		return KEEP_WINDOW;

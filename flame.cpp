@@ -35,9 +35,9 @@ CFlame::~CFlame()
 // Return: 无
 void CFlame::show()
 {
-	Serial.begin(9600);
+	read();
 	Serial.print("***|	Flame:\t");
-	Serial.print( read() );
+	Serial.print( m_value );
 	Serial.print("\t");
 	Serial.print("max = 600");
 	Serial.println();

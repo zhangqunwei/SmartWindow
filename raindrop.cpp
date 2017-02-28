@@ -26,6 +26,17 @@ CRaindrop::~CRaindrop()
 	detach();
 }
 
+// Function: read()
+// Description: 读取传感器的数据并返回
+// Input: 无
+// Output: m_value
+// Return: m_value
+int CSensor::read()
+{
+	m_value = digitalRead(m_pin);
+	return m_value;
+}
+
 // Function: show()
 // Description: 显示 感应板上没有水滴时，DO输出为高电平，开关指示灯灭 ，
 //				滴上一滴水，DO输出为低电平，开关指示灯亮
@@ -34,9 +45,9 @@ CRaindrop::~CRaindrop()
 // Return: 无
 void CRaindrop::show()
 {
-	Serial.begin(9600);
+	read();
 	Serial.print("***|	Raindrop:  ");
-	if (HIGH == digitalRead(m_pin))
+	if (HIGH == m_value)
 		Serial.print("No Rain!");
 	else
 		Serial.print("Rain!");
@@ -53,7 +64,7 @@ void CRaindrop::show()
 //			OPEN_WINDOW   没下雨
 int CRaindrop::monitor()
 {
-	if (true == digitalRead(m_pin))
+	if (LOW == m_value)
 		return SHUT_WINDOW;
 	else
 		return KEEP_WINDOW;
