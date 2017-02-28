@@ -25,6 +25,7 @@ CPeople::~CPeople()
 {
 	detach();
 }
+// hello
 
 // Function: show()
 // Description: 显示
