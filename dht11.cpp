@@ -220,7 +220,6 @@ void Dht11::show()
 		//	Serial.print(" )\t");
 		//}
 		//Serial.println();
-		//，，，，，，kj
 	}
 	delay(500);
 }	// void Dht11::show() END
