@@ -34,6 +34,7 @@ class CPeople : public CSensor
     ~CPeople();
 
   public:
+	  virtual int read();
 	  virtual void show();
 	  virtual int monitor();
 };

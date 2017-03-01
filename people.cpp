@@ -13,6 +13,7 @@
 
 #include "people.h"
 
+#define DANGER 1
 /////////////////////////////////////////////////////////////////////////////
 // CPeople construction/destruction
 CPeople::CPeople(int Pin)
@@ -25,7 +26,16 @@ CPeople::~CPeople()
 {
 	detach();
 }
-
+// Function: read()
+// Description: 读取传感器的数据并返回
+// Input: 无
+// Output: m_value
+// Return: m_value
+int CPeople::read()
+{
+	m_value = digitalRead(m_pin);
+	return m_value;
+}
 // Function: show()
 // Description: 显示
 // Input: 无
@@ -49,10 +59,11 @@ void CPeople::show()
 // Input: 无
 // Output: 无
 // Return:	SHUT_WINDOW   有人
-//			OPEN_WINDOW   没人
+//			KEEP_WINDOW   没人
 int CPeople::monitor()
 {
-	if (true == m_value)
+
+	if (DANGER == read())
 		return SHUT_WINDOW;
 	else
 		return KEEP_WINDOW;
