@@ -51,7 +51,7 @@ public:
 
 public:
 	// 用于扫描温湿度值是否超限
-	int DetectonExtent(char m_value_type, int m_value_min, int m_value_max);
+	int DetectonExtent(char m_value_type, float m_value_min, float m_value_max);
 	virtual int monitor();
 
 	// 相关显示函数

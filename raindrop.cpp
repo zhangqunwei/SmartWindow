@@ -31,7 +31,7 @@ CRaindrop::~CRaindrop()
 // Input: нч
 // Output: m_value
 // Return: m_value
-int CSensor::read()
+int CRaindrop::read()
 {
 	m_value = digitalRead(m_pin);
 	return m_value;

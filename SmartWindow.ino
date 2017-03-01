@@ -21,13 +21,13 @@
 #include "people.h"
 #include "raindrop.h"
 #include "stepper_motor.h"
-
+#include "string.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // 传感器对象定义
 Dht11  MyDht11(2);		// 温湿度
-CFlame MyFlame(A4);		// 火焰
-CSmoke MySmoke(A5);		// 烟雾
+CFlame MyFlame(A0);		// 火焰
+CSmoke MySmoke(A1);		// 烟雾
 CPeople MyPeople(5);	// 人体
 CRaindrop MyRaindrop(4);// 雨滴
 
@@ -40,8 +40,14 @@ int WindowState = SHUT_WINDOW;
 /////////////////////////////////////////////////////////////////////////////
 // 函数声明
 void MyServoControl(int pos);
-CSensor* sensor[5] = { &MySmoke, &MyRaindrop, &MyPeople, &MyFlame ,&MyDht11 };
 
+// 注意区别：
+// 指针数组 (存储指针的数组) array of pointers         例如：int* a[4]
+// 数组指针 (指向数组的指针) a pointer to an array     例如：int(*a)[4]
+
+// 指针数组
+CSensor* sensor[5] = { &MySmoke, &MyRaindrop, &MyPeople, &MyFlame ,&MyDht11 };
+String SensorName[5] = { "MySmoke", "MyRaindrop", "MyPeople", "MyFlame", "MyDht11"};
 
 /////////////////////////////////////////////////////////////////////////////
 // main
@@ -62,7 +68,8 @@ void loop() {
 
 	// 伺服电机部分
 	//MyServoControl(360);
-
+	Serial.println("------------------------------------------------------------------------------------------------------------");
+	Serial.println("***| Num Sensor\t\tRequest\t\tWindowState\t");
 	// 由传感器的数据产生相应的控制
 	for (int i = 0; i < 5; i++)
 	{
@@ -70,56 +77,60 @@ void loop() {
 		{
 			Serial.print("***|  ");
 			Serial.print(i);
-			Serial.print(". flag:\t");
-			Serial.print("keep window!\t");
-			Serial.print(WindowState);
+			Serial.print(". ");
+			Serial.print(SensorName[i]);
+			Serial.print("\tkeep window!\t\t");
+			Serial.print(WindowState);   // 1 为开状态  0 为关闭状态
 			Serial.println();
 			NULL;
 		}
 		else if ((SHUT_WINDOW == sensor[i]->monitor()) && (WindowState == OPEN_WINDOW))
 		{	// 请求关窗
 			MyStepperMotor.control(2, CLOCKWISE, EN);	// 顺时针
-			//MyBuzzer.notify(15, 5);
+			MyBuzzer.notify(15, 5);
 			//delay(200);
 			WindowState = SHUT_WINDOW;
 			Serial.print("***|  ");
 			Serial.print(i);
-			Serial.print(". flag:\t");
-			Serial.print("shut window!\t");
+			Serial.print(". ");
+			Serial.print(SensorName[i]);
+			Serial.print("\tshut window!\t\t");
 			Serial.print(WindowState);
 			Serial.println();
 		}
 		else if ((OPEN_WINDOW == sensor[i]->monitor()) && (WindowState == SHUT_WINDOW))
 		{   // 请求开窗
 			MyStepperMotor.control(2, UNCLOCKWISE, EN);	// 逆时针
-			//MyBuzzer.notify(15, 5);
+			MyBuzzer.notify(15, 5);
 			WindowState = OPEN_WINDOW;
 			Serial.print("***|  ");
 			Serial.print(i);
-			Serial.print(". flag:\t");
-			Serial.print("open window!\t");
+			Serial.print(". ");
+			Serial.print(SensorName[i]);
+			Serial.print("\topen window!\t\t");
 			Serial.print(WindowState);
 			Serial.println();
 		}
-		else
+		else if (WindowState == sensor[i]->monitor())
 		{	// 请求与窗子状态相同时不执行任何动作 
 			Serial.print("***|  ");
 			Serial.print(i);
-			Serial.print(". flag:\t");
-			Serial.print("NULL!\t\t");
+			Serial.print(". ");
+			Serial.print(SensorName[i]);
+			Serial.print("\tNULL!\t\t\t");
 			Serial.print(WindowState);
 			Serial.println();
 			NULL;
 		}
-		//else
-		//{
-		//	NULL;
-		//}
 	}
-	Serial.println();
+	
 	Serial.println();
 	Serial.println("************************************************************************************************************");
 	Serial.println();
+	Serial.println();
+	Serial.println();
+	Serial.println();
+	delay(3000);
 	//// 检测到人 
 	//if (MyPeople.monitor() == true)
 	//{
