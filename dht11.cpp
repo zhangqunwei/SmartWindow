@@ -11,7 +11,7 @@
 
 #define VALUEMIN	0
 #define VALUEMAX	1
-
+#define VALUENORMAL 2
 /////////////////////////////////////////////////////////////////////////////
 // Dht11 construction/destruction
 Dht11::Dht11(int dht_pin)
@@ -100,13 +100,13 @@ int Dht11::read()
 typedef	struct
 {
 	char type;
-	int min;
-	int max;
+	float min;
+	float max;
 }ValueExtent;
 
-ValueExtent value[3] = {{ 'T', 5, 25 },	// 温度的监控范围
+ValueExtent value[3] = {{ 'T', 5, 19 },	// 温度的监控范围
 						{ 'H', 5, 80 }, // 湿度的监控范围
-						{ 'D', 0, 35 } 	// 露点的监控范围
+						{ 'D', -20, 20 } 	// 露点的监控范围
 						};	
 						 
 
@@ -126,9 +126,8 @@ int Dht11::monitor()
 			return SHUT_WINDOW;
 		else if (VALUEMAX == DetectonExtent(value[i].type, value[i].min, value[i].max))
 			return OPEN_WINDOW;
-		else
-			return KEEP_WINDOW;
 	}
+	return KEEP_WINDOW;
 }
 
 // Function: DetectonExtent()
@@ -140,36 +139,34 @@ int Dht11::monitor()
 // Output: 无
 // Return:	VALUEMIN 小于最小值
 // 			VALUEMAX 大于最大值
-int Dht11::DetectonExtent(char m_value_type, int m_value_min, int m_value_max)
+int Dht11::DetectonExtent(char m_value_type, float m_value_min, float m_value_max)
 {
 	// 监测最新值
 	switch (m_value_type)
 	{
 	case 'H':
-	case 'h':
-		if ((float)m_humidity < m_value_min)
+		if ((float)m_humidity * 100 < m_value_min * 100)
 			return VALUEMIN;
 		if ((float)m_humidity > m_value_max)
 			return VALUEMAX;
 		break;
 
 	case 'T':
-	case 't':
-		if ((float)m_temperature < m_value_min)
+		if ((float)m_temperature * 100 < m_value_min * 100)
 			return VALUEMIN;
 		if ((float)m_temperature>m_value_max)
 			return VALUEMAX;
 		break;
 
 	case 'D':
-	case 'd':
-		if (dewPointFast(m_temperature, m_humidity) < m_value_min)
+		if (dewPointFast(m_temperature, m_humidity) * 100 < m_value_min * 100)
 			return VALUEMIN;
 		if (dewPointFast(m_temperature, m_humidity) > m_value_max)
 			return VALUEMAX;
 		break;
 
 	default:
+		return VALUENORMAL;
 		break;
 	}
 } // DetectonExtent() end
@@ -194,11 +191,11 @@ void Dht11::show()
 		Serial.print("\tTemperature (oC):");
 		Serial.print((float)m_temperature, 2);
 
-		Serial.print("\t(oF): ");
-		Serial.print(Fahrenheit(m_temperature), 2);
+		//Serial.print("\t(oF): ");
+		//Serial.print(Fahrenheit(m_temperature), 2);
 
-		Serial.print("\t(K): ");
-		Serial.print(Kelvin(m_temperature), 2);
+		//Serial.print("\t(K): ");
+		//Serial.print(Kelvin(m_temperature), 2);
 
 		Serial.print("\tHumidity(%): ");
 		Serial.print((float)m_humidity, 2);
@@ -219,7 +216,7 @@ void Dht11::show()
 		}
 		Serial.println();
 	}
-	delay(1000);
+	delay(50);
 }	// void Dht11::show() END
 
 // 显示露点
