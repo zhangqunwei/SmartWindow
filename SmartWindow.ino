@@ -3,11 +3,8 @@
 //
 // FileName:SmartWindow.ino 
 // Summary: 智能窗项目主程序
-//			1.当有人，温湿度过低，或者下雨时执行关窗动作，且下雨时会
-//			  触发伺服电机，使其进行清洁工作。
-//			2.当有气体泄漏或着着火时执行开窗动作。
-//			3.每次执行开窗或者关窗动作之前都会有蜂鸣器提示。
 // Author: 张群伟    Version: 1.0    Date:2017/1/10
+// github:https://github.com/zhangqunwei/SmartWindow.git
 // History: 
 //     Author:    Date:    Version:    Modification: 
 //  1. 张群伟     17/1/10  1.0         创建该项目
