@@ -64,7 +64,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>D:\Arduino\libraries\Servo\src;C:\Users\God-is-fool\Documents\Arduino\libraries\IRremote;D:\Arduino\libraries;D:\Arduino\hardware\arduino\avr\libraries;C:\Users\God-is-fool\Documents\Arduino\libraries;D:\Arduino\hardware\arduino\avr\cores\arduino;D:\Arduino\hardware\arduino\avr\variants\standard;$(ProjectDir)..\SmartWindow;D:\Arduino\hardware\tools\avr\avr\include\;D:\Arduino\hardware\tools\avr\avr\include\avr\;D:\Arduino\hardware\tools\avr\lib\gcc\avr\4.8.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Arduino\libraries\Servo\src;D:\Arduino\libraries;D:\Arduino\hardware\arduino\avr\libraries;C:\Users\God-is-fool\Documents\Arduino\libraries;D:\Arduino\hardware\arduino\avr\cores\arduino;D:\Arduino\hardware\arduino\avr\variants\standard;$(ProjectDir)..\SmartWindow;D:\Arduino\hardware\tools\avr\avr\include\;D:\Arduino\hardware\tools\avr\avr\include\avr\;D:\Arduino\hardware\tools\avr\lib\gcc\avr\4.8.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ForcedIncludeFiles>$(ProjectDir)__vm\.SmartWindow.vsarduino.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <PreprocessorDefinitions>__AVR_ATmega328p__;__AVR_ATmega328P__;F_CPU=16000000L;ARDUINO=10800;ARDUINO_AVR_UNO;ARDUINO_ARCH_AVR;__cplusplus=201103L;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -94,7 +94,7 @@
     <ClInclude Include="flame.h">
       <FileType>CppCode</FileType>
     </ClInclude>
-    <ClInclude Include="notify.h" />
+    <ClInclude Include="message.h" />
     <ClInclude Include="people.h">
       <FileType>CppCode</FileType>
     </ClInclude>
@@ -111,7 +111,7 @@
   <ItemGroup>
     <ClCompile Include="dht11.cpp" />
     <ClCompile Include="flame.cpp" />
-    <ClCompile Include="notify.cpp" />
+    <ClCompile Include="message.cpp" />
     <ClCompile Include="people.cpp" />
     <ClCompile Include="raindrop.cpp" />
     <ClCompile Include="sensor.cpp" />

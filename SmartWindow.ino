@@ -3,7 +3,10 @@
 //
 // FileName:SmartWindow.ino 
 // Summary: 智能窗项目主程序
-// 
+//			1.当有人，温湿度过低，或者下雨时执行关窗动作，且下雨时会
+//			  触发伺服电机，使其进行清洁工作。
+//			2.当有气体泄漏或着着火时执行开窗动作。
+//			3.每次执行开窗或者关窗动作之前都会有蜂鸣器提示。
 // Author: 张群伟    Version: 1.0    Date:2017/1/10
 // History: 
 //     Author:    Date:    Version:    Modification: 
@@ -11,9 +14,12 @@
 //  2. 张群伟     17/2/25  1.1         添加舵机模块，烟雾检测模块
 /////////////////////////////////////////////////////////////////////////////
 
-#include <Servo.h>
-#include <IRremote.h>
-#include "notify.h"
+
+/////////////////////////////////////////////////////////////////////////////
+// 头文件包含
+#include "Servo.h"
+#include "C:\Users\God-is-fool\Documents\Arduino\libraries\IRremote\IRremote.h"
+#include "Message.h"
 #include "sensor.h"
 #include "dht11.h"
 #include "flame.h"
@@ -23,58 +29,63 @@
 #include "stepper_motor.h"
 #include "string.h"
 
+
 /////////////////////////////////////////////////////////////////////////////
-// 传感器对象定义
-Dht11  MyDht11(2);		// 温湿度
+// 引脚定义
+CMessage MyBuzzer(7);	// 蜂鸣器
+CStepperMotor MyStepperMotor(11, 12, 13);// 步进电机 (byte clk, byte cw, byte en)
+
 CFlame MyFlame(A0);		// 火焰
 CSmoke MySmoke(A1);		// 烟雾
-CPeople MyPeople(5);	// 人体
-CRaindrop MyRaindrop(4);// 雨滴
+Dht11  MyDht11(6);		// 温湿度
+CPeople MyPeople(9);	// 人体
+CRaindrop MyRaindrop(8);// 雨滴	
+Servo  MyServo;			// 伺服电机	
 
-CNotify MyBuzzer(3);	// 蜂鸣器	
-Servo  myservo;			// 伺服电机
-CStepperMotor MyStepperMotor(11, 12, 13);	// 步进电机 (byte clk, byte cw, byte en)
-											
+
+/////////////////////////////////////////////////////////////////////////////
+// 全局变量
 int WindowState = SHUT_WINDOW;
+CMessage MySerial;
+
+// 注意区别：
+// 指针数组 (存储指针的数组) array of pointers         例如：int* a[4]
+// 数组指针 (指向数组的指针) a pointer to an array     例如：int(*a)[4]
+CSensor* sensor[5] = { &MySmoke, &MyRaindrop, &MyPeople, &MyFlame, &MyDht11 };
+String SensorName[5] = { "MySmoke", "MyRaindrop", "MyPeople", "MyFlame", "MyDht11" };
+
 
 /////////////////////////////////////////////////////////////////////////////
 // 函数声明
 void MyServoControl(int pos);
 
-// 注意区别：
-// 指针数组 (存储指针的数组) array of pointers         例如：int* a[4]
-// 数组指针 (指向数组的指针) a pointer to an array     例如：int(*a)[4]
-
-// 指针数组
-CSensor* sensor[5] = { &MySmoke, &MyRaindrop, &MyPeople, &MyFlame ,&MyDht11 };
-String SensorName[5] = { "MySmoke", "MyRaindrop", "MyPeople", "MyFlame", "MyDht11"};
 
 /////////////////////////////////////////////////////////////////////////////
-// main
+// 主函数
 void setup() {
   // put your setup code here, to run once:
-	myservo.attach(6);	// 伺服电机引脚定义
+	MyServo.attach(10);	// 伺服电机引脚定义
+	MyServo.write(LOW);
 	Serial.begin(9600);
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
 
+
 	// 显示所有传感器采集到的值
 	for (int i = 0; i < 5; i++)
 	{
 		sensor[i]->show();
 	}
-
-	// 伺服电机部分
-	//MyServoControl(360);
 	Serial.println("------------------------------------------------------------------------------------------------------------");
 	Serial.println("***| Num Sensor\t\tRequest\t\tWindowState\t");
+	
 	// 由传感器的数据产生相应的控制
 	for (int i = 0; i < 5; i++)
 	{
 		if (sensor[i]->monitor() == KEEP_WINDOW)
-		{
+		{	// 无请求
 			Serial.print("***|  ");
 			Serial.print(i);
 			Serial.print(". ");
@@ -86,9 +97,9 @@ void loop() {
 		}
 		else if ((SHUT_WINDOW == sensor[i]->monitor()) && (WindowState == OPEN_WINDOW))
 		{	// 请求关窗
-			MyStepperMotor.control(2, CLOCKWISE, EN);	// 顺时针
-			MyBuzzer.notify(15, 5);
-			//delay(200);
+			MyBuzzer.pulse(15, 5);
+			delay(2000);
+			MyStepperMotor.control(2, CLOCKWISE, EN);	// 顺时针		
 			WindowState = SHUT_WINDOW;
 			Serial.print("***|  ");
 			Serial.print(i);
@@ -100,8 +111,9 @@ void loop() {
 		}
 		else if ((OPEN_WINDOW == sensor[i]->monitor()) && (WindowState == SHUT_WINDOW))
 		{   // 请求开窗
+			MyBuzzer.pulse(15, 5);
+			delay(2000);
 			MyStepperMotor.control(2, UNCLOCKWISE, EN);	// 逆时针
-			MyBuzzer.notify(15, 5);
 			WindowState = OPEN_WINDOW;
 			Serial.print("***|  ");
 			Serial.print(i);
@@ -129,39 +141,37 @@ void loop() {
 	Serial.println();
 	Serial.println();
 	Serial.println();
+
+  delay(3000);
+	switch (MySerial.monitor())
+	{
+	case 'o':
+		MyBuzzer.pulse(15, 5);
+		delay(2000);
+		MyStepperMotor.control(2, UNCLOCKWISE, EN);	// 逆时针
+		WindowState = OPEN_WINDOW;
+		break;
+	case 's':
+		MyBuzzer.pulse(15, 5);
+		delay(2000);
+		MyStepperMotor.control(2, CLOCKWISE, EN);	// 顺时针		
+		WindowState = SHUT_WINDOW;
+		break;
+	case 'c':
+		MyServoControl(180);
+		break;
+
+	default:
+		break;
+	}
 	Serial.println();
-	delay(3000);
-	//// 检测到人 
-	//if (MyPeople.monitor() == true)
-	//{
-	//	MyStepperMotor.control(2, CLOCKWISE, EN);
-	//	
-	//}
-	//// 检测到失火
-	//if (MyFlame.monitor(0, 150) == 0 || MyFlame.monitor(0, 150) == 150)
-	//{
-	//	MyStepperMotor.control(2, CLOCKWISE, EN);
-	//	
-	//}
-	//// 检测到气体泄漏
-	//if (MySmoke.monitor(0, 60) == 0 || MySmoke.monitor(0, 150) == 150)
-	//{
-	//	MyStepperMotor.control(2, CLOCKWISE, EN);
 
-	//}
+	// 伺服电机部分
+	if (SHUT_WINDOW == sensor[1]->monitor())
+	{
+		MyServoControl(180);
+	}
 
-	//// 检测到下雨
-	//if (true == MyRaindrop.monitor())
-	//{
-
-	//}
-
-	//// 温湿度监控 
-	//if (MyDht11.monitor('T', 0, 20) == 18 || MyDht11.monitor('T', 0, 20) == 20)
-	//{
-	//	MyStepperMotor.control(2, CLOCKWISE, EN);
-	//	
-	//}
 } 
 
 
@@ -172,14 +182,19 @@ void loop() {
 void MyServoControl(int pos)
 {
 	int i = 0;
-	for (i = 0; i <  pos; i += 1)
+	int count = 5;
+	while (count--)
 	{
-		myservo.write(i);
-		delay(15);
+		for (i = 0; i < pos; i += 1)
+		{
+			MyServo.write(i);
+			delay(15);
+		}
+		for (i = pos; i >= 1; i -= 1)
+		{
+			MyServo.write(i);
+			delay(15);
+		}
 	}
-	for (i = pos; i >= 1; i -= 1)
-	{
-		myservo.write(i);
-		delay(15);
-	}
+	
 }

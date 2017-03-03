@@ -38,7 +38,7 @@ void CSmoke::show()
 	Serial.print("***|	Smoke:  ");
 	Serial.print(m_value);
 	Serial.print("\t");
-	Serial.print("max = 150");
+	Serial.print("\t\tmax = 150 ");
 	Serial.println();
 	delay(50);
 }

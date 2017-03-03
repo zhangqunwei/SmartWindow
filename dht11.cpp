@@ -104,7 +104,7 @@ typedef	struct
 	float max;
 }ValueExtent;
 
-ValueExtent value[3] = {{ 'T', 5, 19 },	// 温度的监控范围
+ValueExtent value[3] = {{ 'T', 5, 25 },	// 温度的监控范围
 						{ 'H', 5, 80 }, // 湿度的监控范围
 						{ 'D', -20, 20 } 	// 露点的监控范围
 						};	

@@ -82,7 +82,7 @@ void CStepperMotor::control(int pulse_width, bool cw, bool en)
     digitalWrite( m_cw, LOW);   	// anti-clockwise
   }
   // pulse control
-  byte num_pulse = 400;   // 脉冲数，用于调整窗子打开程度
+  int num_pulse = NUM_PULSE;   // 脉冲数，用于调整窗子打开程度
   if ( 0 == pulse_width ) 
 	  pulse_width = 1;    		// pulse ceiling
 

@@ -20,10 +20,11 @@
 #include <WProgram.h>
 #endif
 
-#define  CLOCKWISE		0 // 顺时针
-#define  UNCLOCKWISE    1 // 逆时针
-#define  EN				1 // 使能
-#define  UNEN			0 // 不使能
+#define  NUM_PULSE      1000	// 脉冲数，用于调整步进电机的步进距离
+#define  CLOCKWISE		0		// 顺时针
+#define  UNCLOCKWISE    1		// 逆时针
+#define  EN				1		// 使能
+#define  UNEN			0		// 不使能
 
 // save stepper motor state
 typedef struct SMS

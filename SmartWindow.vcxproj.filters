@@ -42,7 +42,7 @@
     <ClInclude Include="people.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="notify.h">
+    <ClInclude Include="message.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -68,7 +68,7 @@
     <ClCompile Include="people.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="notify.cpp">
+    <ClCompile Include="message.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

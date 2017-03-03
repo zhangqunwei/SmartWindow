@@ -39,7 +39,7 @@ void CFlame::show()
 	Serial.print("***|	Flame:\t");
 	Serial.print( m_value );
 	Serial.print("\t");
-	Serial.print("max = 600");
+	Serial.print("\t\tmax = 600");
 	Serial.println();
 	delay(50);
 }
