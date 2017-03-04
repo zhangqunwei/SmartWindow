@@ -15,7 +15,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // 头文件包含
 #include "Servo.h"
-#include "C:\Users\God-is-fool\Documents\Arduino\libraries\IRremote\IRremote.h"
+#include "IRremote.h"
 #include "Message.h"
 #include "sensor.h"
 #include "dht11.h"
