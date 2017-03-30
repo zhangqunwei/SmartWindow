@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="SmartWindow.ino" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="__vm\.SmartWindow.vsarduino.h">
       <Filter>Header</Filter>
     </ClInclude>
@@ -71,5 +68,8 @@
     <ClCompile Include="message.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="SmartWindow.ino" />
   </ItemGroup>
 </Project>
