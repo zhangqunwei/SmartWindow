@@ -1,14 +1,14 @@
 /**************************************************************************************
- * Copyright (c) 张群伟. 
- * All rights reserved.	
- * 文件名	：sensor.cpp
- * 摘要		：CSensor类的实现
- * 作者		：张群伟	南昌航空大学信息工程学院自动化系
- * 日期		：[3/29/2017]
- * 历史记录	：
- *		修改者：   日期：	 版本：	   修改内容：
- *	1.  张群伟     17/2/3   1.0         创建该模块 	
- **************************************************************************************/
+* Copyright (c) 张群伟.
+* All rights reserved.
+* 文件名	：sensor.cpp
+* 摘要		：CSensor类的实现
+* 作者		：张群伟	南昌航空大学信息工程学院自动化系
+* 日期		：[3/29/2017]
+* 历史记录	：
+*		修改者：   日期：	 版本：	   修改内容：
+*	1.  张群伟     17/2/3   1.0         创建该模块
+**************************************************************************************/
 
 #include "sensor.h"
 
@@ -17,8 +17,8 @@
 // CSensor 构造/析构
 CSensor::CSensor()
 {
-    pinMode(m_pin, INPUT);
-    m_value = 0;
+	pinMode(m_pin, INPUT);
+	m_value = 0;
 }
 
 CSensor::~CSensor()
@@ -52,9 +52,9 @@ int CSensor::read(void)
  **************************************************************************************/
 void CSensor::detach(void)
 {
-    pinMode(m_pin, OUTPUT);
-    digitalWrite(m_pin, LOW);
-    pinMode(m_pin, INPUT);
+	pinMode(m_pin, OUTPUT);
+	digitalWrite(m_pin, LOW);
+	pinMode(m_pin, INPUT);
 }
 
 //

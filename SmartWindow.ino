@@ -1,6 +1,6 @@
 /**************************************************************************************
- * Copyright (c) 张群伟. 
- * All rights reserved.	
+ * Copyright (c) 张群伟.
+ * All rights reserved.
  * 文件名	：SmartWindow.ino
  * 摘要		：智能窗项目主程序
  * github	：https://github.com/zhangqunwei/SmartWindow.git
@@ -13,11 +13,19 @@
  **************************************************************************************/
 
 
+////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////
+// 调试
+#define open			1
+#define shut			0
+#define _zqwdebug_		shut
 
 ////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////
 // 头文件包含
+#if _zqwdebug_
 #include "Servo.h"
+#endif
 #include "IRremote.h"
 #include "Message.h"
 #include "sensor.h"
@@ -29,23 +37,21 @@
 #include "stepper_motor.h"
 #include "string.h"
 
-
-
 ////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////
 // 引脚定义
-CMessage MyBuzzer(7);						// 蜂鸣器
+CMessage MyBuzzer(9);						// 蜂鸣器
 CStepperMotor MyStepperMotor(11, 12, 13);	// 步进电机 (byte clk, byte cw, byte en)
 
 CFlame MyFlame(A0);							// 火焰
 CSmoke MySmoke(A1);							// 烟雾
-Dht11  MyDht11(6);							// 温湿度
-CPeople MyPeople(9);						// 人体
-CRaindrop MyRaindrop(8);					// 雨滴	
-Servo  MyServo;								// 伺服电机	
+Dht11  MyDht11(8);							// 温湿度
+CPeople MyPeople(6);						// 人体
+CRaindrop MyRaindrop(10);					// 雨滴
 
-
-
+#if _zqwdebug_
+Servo  MyServo;								// 伺服电机
+#endif
 ////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////
 // 全局变量
@@ -59,30 +65,31 @@ CMessage MySerial;
 CSensor* sensor[5] = { &MySmoke, &MyRaindrop, &MyPeople, &MyFlame, &MyDht11 };
 String SensorName[5] = { "MySmoke", "MyRaindrop", "MyPeople", "MyFlame", "MyDht11" };
 
-
-
 ////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////
 // 函数声明
-
+#if _zqwdebug_
 // 伺服电机控制
 void MyServoControl(int pos);
-
-
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////
 // 主函数
 void setup() {
-  // put your setup code here, to run once:
-	MyServo.attach(10);	// 伺服电机引脚定义
+	// put your setup code here, to run once:
+#if _zqwdebug_
+	MyServo.attach(7);	// 伺服电机引脚定义
 	MyServo.write(LOW);
+#endif
+	pinMode(4, INPUT);
+	pinMode(5, INPUT);
+
 	Serial.begin(9600);
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-
+	// put your main code here, to run repeatedly:
 
 	// 显示所有传感器采集到的值
 	for (int i = 0; i < 5; i++)
@@ -91,7 +98,7 @@ void loop() {
 	}
 	Serial.println("------------------------------------------------------------------------------------------------------------");
 	Serial.println("***| Num Sensor\t\tRequest\t\tWindowState\t");
-	
+
 	// 由传感器的数据产生相应的控制
 	for (int i = 0; i < 5; i++)
 	{
@@ -110,7 +117,7 @@ void loop() {
 		{	// 请求关窗
 			MyBuzzer.pulse(15, 5);
 			delay(2000);
-			MyStepperMotor.control(2, CLOCKWISE, EN);	// 顺时针		
+			MyStepperMotor.control(2, CLOCKWISE, EN);	// 顺时针
 			WindowState = SHUT_WINDOW;
 			Serial.print("***|  ");
 			Serial.print(i);
@@ -135,7 +142,7 @@ void loop() {
 			Serial.println();
 		}
 		else if (WindowState == sensor[i]->monitor())
-		{	// 请求与窗子状态相同时不执行任何动作 
+		{	// 请求与窗子状态相同时不执行任何动作
 			Serial.print("***|  ");
 			Serial.print(i);
 			Serial.print(". ");
@@ -146,14 +153,14 @@ void loop() {
 			NULL;
 		}
 	}
-	
+
 	Serial.println();
 	Serial.println("************************************************************************************************************");
 	Serial.println();
 	Serial.println();
 	Serial.println();
 
-  delay(3000);
+	delay(3000);
 	switch (MySerial.monitor())
 	{
 	case 'o':
@@ -165,32 +172,27 @@ void loop() {
 	case 's':
 		MyBuzzer.pulse(15, 5);
 		delay(2000);
-		MyStepperMotor.control(2, CLOCKWISE, EN);	// 顺时针		
+		MyStepperMotor.control(2, CLOCKWISE, EN);	// 顺时针
 		WindowState = SHUT_WINDOW;
 		break;
+#if _zqwdebug_
 	case 'c':
 		MyServoControl(180);
 		break;
-
+#endif
 	default:
 		break;
 	}
 	Serial.println();
 
-	// 伺服电机部分
-	if (SHUT_WINDOW == sensor[1]->monitor())
-	{
-		MyServoControl(180);
-	}
 
-} 
-
-
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////
 // function define
 
+#if _zqwdebug_
 /**************************************************************************************
  * 函数名	：MyServoControl()
  * 功能		：伺服电机控制
@@ -209,13 +211,13 @@ void MyServoControl(int pos)
 		for (i = 0; i < pos; i += 1)
 		{
 			MyServo.write(i);
-			delay(15);
+			delay(10);
 		}
 		for (i = pos; i >= 1; i -= 1)
 		{
 			MyServo.write(i);
-			delay(15);
+			delay(10);
 		}
 	}
-	
 }
+#endif
