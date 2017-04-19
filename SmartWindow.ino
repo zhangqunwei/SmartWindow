@@ -82,6 +82,7 @@ void setup() {
 	MyServo.attach(7);	// 伺服电机引脚定义
 	MyServo.write(LOW);
 #endif
+	// 限位开关（不分左右）
 	pinMode(4, INPUT);
 	pinMode(5, INPUT);
 
