@@ -52,20 +52,20 @@ typedef struct SMS
 class CStepperMotor
 {
   private:
-    byte m_clk;   // pulse		connect clk pin of Tb6560.
-    byte m_cw;    // direction	connect cw pin of Tb6560.
-    byte m_en;    // enable 	connect clk pin of Tb6560.
+	byte m_clk;   // pulse		connect clk pin of Tb6560.
+	byte m_cw;    // direction	connect cw pin of Tb6560.
+	byte m_en;    // enable 	connect clk pin of Tb6560.
 
   public:
-    // initialise pulse, direction, enable
-    CStepperMotor(byte clk, byte cw, byte en);
+	// initialise pulse, direction, enable
+	CStepperMotor(byte clk, byte cw, byte en);
 
-    ~CStepperMotor();
+	~CStepperMotor();
 
   public:
-    void control(int pulse, bool cw, bool en); 	// control stepper motor
+	void control(int pulse, bool cw, bool en); 	// control stepper motor
 	void get_state(StepperMotorState* stat);    // get stepper motor state
-    void disattach();                         	// free pin and stepper motor of binding，
+	void disattach();                         	// free pin and stepper motor of binding，
 												// so as to control other thing of pin
 };
 

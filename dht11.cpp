@@ -114,7 +114,7 @@ typedef	struct
 }ValueExtent;
 
 //! 在此设置温湿度监控范围
-ValueExtent value[3] = { { 'T', 5, 20 },		// 温度的监控范围
+ValueExtent value[3] = { { 'T', 5, 30 },		// 温度的监控范围
 						 { 'H', 5, 80 },		// 湿度的监控范围
 						 { 'D', -20, 20 } 		// 露点的监控范围
 };
@@ -237,8 +237,7 @@ void Dht11::show(void)
 		}
 		Serial.println();
 	}
-	//!delay(50);
-	delay(10);
+	delay(DELAY_VALUE);
 }	// void Dht11::show() END
 
 /**************************************************************************************

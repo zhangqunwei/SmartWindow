@@ -87,14 +87,14 @@ char CMessage::monitor()
 	{ // 接收消息并存到缓冲区
 		rx_buffer = Serial.read();
 	}
-	Serial.print("***|  send:\t");
+	Serial.print("***|  PC	 send:\t");
 	Serial.print(rx_buffer);
 	Serial.println();
 
 	if ((rx_buffer == 's') && (WindowState == OPEN_WINDOW))
 	{ // shut 关窗
 		Serial.print("***|  ");
-		Serial.print("Will shut window!"); 
+		Serial.print("Arduino receive:	Will shut window!"); 
 		Serial.println();
 		rx_buffer = 'N';
 		return 's';
@@ -102,7 +102,7 @@ char CMessage::monitor()
 	else if ((rx_buffer == 'o') && (WindowState == SHUT_WINDOW))
 	{ // open 开窗
 		Serial.print("***|  ");
-		Serial.print("Will open window!");
+		Serial.print("Arduino receive:	Will open window!");
 		Serial.println();
 		rx_buffer = 'N';
 		return 'o';
@@ -110,15 +110,39 @@ char CMessage::monitor()
 	else if (rx_buffer == 'c')
 	{ // clear 清洗
 		Serial.print("***|  ");
-		Serial.print("Will clear window!");
+		Serial.print("Arduino receive:	Will clear window!");
 		Serial.println();
 		rx_buffer = 'N';
 		return 'c';
 	}
+	else if (rx_buffer == 'k')
+	{ // clear 关闭清洗
+		Serial.print("***|  ");
+		Serial.print("Arduino receive:	Will shut clear!");
+		Serial.println();
+		rx_buffer = 'N';
+		return 'k';
+	}
+	else if (rx_buffer == 'f')
+	{ // f 打开风扇
+		Serial.print("***|  ");
+		Serial.print("Arduino receive:	Will open fan!");
+		Serial.println();
+		rx_buffer = 'N';
+		return 'f';
+	}
+	else if (rx_buffer == 'g')
+	{ // g 关闭风扇
+		Serial.print("***|  ");
+		Serial.print("Arduino receive:	Will shut fan!");
+		Serial.println();
+		rx_buffer = 'N';
+		return 'g';
+	}
 	else
 	{ // no message 无消息
 		Serial.print("***|  ");
-		Serial.print("No message!");
+		Serial.print("Arduino receive:	No message!");
 		Serial.println();
 		rx_buffer = 'N';
 		return 'n';

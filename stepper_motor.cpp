@@ -103,14 +103,15 @@ void CStepperMotor::control(int pulse_width, bool cw, bool en)
 		pulse_width = 1;    		// pulse ceiling
 
 	//!while (num_pulse-- > 0)
-	for (int i = 50; i > 0; i--)
-	{
-		digitalWrite(m_clk, HIGH);
-		delay(pulse_width);
-		digitalWrite(m_clk, LOW);
-		delay(pulse_width);
-	}
-	while (0 != digitalRead(4) && 0 != digitalRead(5))
+	if (en)
+		for (int i = 50; i > 0; i--)
+		{
+			digitalWrite(m_clk, HIGH);
+			delay(pulse_width);
+			digitalWrite(m_clk, LOW);
+			delay(pulse_width);
+		}
+	while (0x0 != digitalRead(7) && 0x0 != digitalRead(8))
 	{
 		digitalWrite(m_clk, HIGH);
 		delay(pulse_width);

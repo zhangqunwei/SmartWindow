@@ -45,8 +45,7 @@ void CFlame::show(void)
 	Serial.print("\t");
 	Serial.print("\t\tmax = 600");
 	Serial.println();
-	//!delay(50);
-	delay(10);
+	delay(DELAY_VALUE);
 }
 
 /**************************************************************************************

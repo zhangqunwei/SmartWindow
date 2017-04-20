@@ -23,6 +23,8 @@
 #define SHUT_WINDOW 0
 #define KEEP_WINDOW 2
 
+#define DELAY_VALUE 50
+
 /**************************************************************************************
  * 类名称	：CSensor
  * 功能		：CSensor提供传感器的使用接口。

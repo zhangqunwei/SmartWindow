@@ -61,8 +61,7 @@ void CRaindrop::show(void)
 		Serial.print("Rain!");
 
 	Serial.println();
-	//delay(50);
-	delay(10);
+	delay(DELAY_VALUE);
 }
 
 /**************************************************************************************

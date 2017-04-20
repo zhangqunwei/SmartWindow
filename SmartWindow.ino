@@ -16,17 +16,36 @@
 ////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////
 // 调试
+
+// 开关
 #define open			1
 #define shut			0
-#define _zqwdebug_		shut
 
+// 舵机开关
+#define _zqwdebug_Servo			open
+
+// 风扇开关
+#define _zqwdebug_fan			open
+
+// 传感器开关
+#define _zqwdebug_smoke_		open
+#define _zqwdebug_raindrop_		open
+#define _zqwdebug_people_		open
+#define _zqwdebug_flame_		open
+#define _zqwdebug_dht11_		open
+
+#define _zqwdebug_sensor(i) 	if(!_zqwdebug_smoke_) ++i;\
+if (!_zqwdebug_raindrop_) ++i;\
+if (!_zqwdebug_people_)	++i;\
+if (!_zqwdebug_flame_) ++i;\
+if (!_zqwdebug_dht11_) ++i\
+	
 ////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////
 // 头文件包含
-#if _zqwdebug_
+#if _zqwdebug_Servo
 #include "Servo.h"
 #endif
-#include "IRremote.h"
 #include "Message.h"
 #include "sensor.h"
 #include "dht11.h"
@@ -40,22 +59,24 @@
 ////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////
 // 引脚定义
-CMessage MyBuzzer(9);						// 蜂鸣器
-CStepperMotor MyStepperMotor(11, 12, 13);	// 步进电机 (byte clk, byte cw, byte en)
+CMessage MyBuzzer(12);						// 蜂鸣器
+CStepperMotor MyStepperMotor(2, 3, 4);	// 步进电机 (byte clk, byte cw, byte en)
 
-CFlame MyFlame(A0);							// 火焰
-CSmoke MySmoke(A1);							// 烟雾
-Dht11  MyDht11(8);							// 温湿度
-CPeople MyPeople(6);						// 人体
-CRaindrop MyRaindrop(10);					// 雨滴
+CFlame MyFlame(A4);							// 火焰
+CSmoke MySmoke(A5);							// 烟雾
+Dht11  MyDht11(13);							// 温湿度
+CPeople MyPeople(9);						// 人体
+CRaindrop MyRaindrop(11);					// 雨滴
 
-#if _zqwdebug_
+#if _zqwdebug_Servo
 Servo  MyServo;								// 伺服电机
 #endif
 ////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////
 // 全局变量
-int WindowState = SHUT_WINDOW;
+int WindowState(SHUT_WINDOW);
+int FanFlag(LOW);
+int ServoFlag(0);
 CMessage MySerial;
 
 //- 注意区别：
@@ -68,7 +89,7 @@ String SensorName[5] = { "MySmoke", "MyRaindrop", "MyPeople", "MyFlame", "MyDht1
 ////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////
 // 函数声明
-#if _zqwdebug_
+#if _zqwdebug_Servo
 // 伺服电机控制
 void MyServoControl(int pos);
 #endif
@@ -78,15 +99,31 @@ void MyServoControl(int pos);
 // 主函数
 void setup() {
 	// put your setup code here, to run once:
-#if _zqwdebug_
-	MyServo.attach(7);	// 伺服电机引脚定义
+	//!引脚定义
+#if _zqwdebug_Servo
+	// 伺服电机引脚
+	MyServo.attach(10);	
 	MyServo.write(LOW);
 #endif
-	// 限位开关（不分左右）
-	pinMode(4, INPUT);
-	pinMode(5, INPUT);
+	// 限位开关引脚（不分左右）
+	pinMode(7, OUTPUT);
+	digitalWrite(7, LOW);
+	pinMode(7, INPUT);
 
+	pinMode(8, OUTPUT);
+	digitalWrite(8, LOW);
+	pinMode(8, INPUT);
+
+	// 风扇引脚
+	pinMode(6, OUTPUT);
+	digitalWrite(6, LOW);
+
+	// 串口波特率
 	Serial.begin(9600);
+	
+	// 关闭步进电机
+	digitalWrite(4, HIGH);
+	//MyStepperMotor.control(2, CLOCKWISE, UNEN);	
 }
 
 void loop() {
@@ -97,12 +134,17 @@ void loop() {
 	{
 		sensor[i]->show();
 	}
-	Serial.println("------------------------------------------------------------------------------------------------------------");
-	Serial.println("***| Num Sensor\t\tRequest\t\tWindowState\t");
+	Serial.println();
+	Serial.println("************************************************************************************************************");
+	Serial.println();
+
+	//Serial.println("------------------------------------------------------------------------------------------------------------");
+	Serial.println("***| Num Sensor\t\tRequest\t\tWindowState(1 open : 0 shut)\t");
 
 	// 由传感器的数据产生相应的控制
 	for (int i = 0; i < 5; i++)
 	{
+		_zqwdebug_sensor(i);
 		if (sensor[i]->monitor() == KEEP_WINDOW)
 		{	// 无请求
 			Serial.print("***|  ");
@@ -130,9 +172,13 @@ void loop() {
 		}
 		else if ((OPEN_WINDOW == sensor[i]->monitor()) && (WindowState == SHUT_WINDOW))
 		{   // 请求开窗
+			ServoFlag = 0;
 			MyBuzzer.pulse(15, 5);
 			delay(2000);
 			MyStepperMotor.control(2, UNCLOCKWISE, EN);	// 逆时针
+#if _zqwdebug_fan
+			if (i == 0) digitalWrite(6, HIGH);
+#endif
 			WindowState = OPEN_WINDOW;
 			Serial.print("***|  ");
 			Serial.print(i);
@@ -164,36 +210,76 @@ void loop() {
 	delay(3000);
 	switch (MySerial.monitor())
 	{
-	case 'o':
+	case 'o':// 开窗
 		MyBuzzer.pulse(15, 5);
-		delay(2000);
-		MyStepperMotor.control(2, UNCLOCKWISE, EN);	// 逆时针
+		delay(5000);
+		MyStepperMotor.control(2, CLOCKWISE, EN);	
 		WindowState = OPEN_WINDOW;
 		break;
-	case 's':
+	case 's':// 关窗
 		MyBuzzer.pulse(15, 5);
-		delay(2000);
-		MyStepperMotor.control(2, CLOCKWISE, EN);	// 顺时针
+		delay(5000);
+		MyStepperMotor.control(2, UNCLOCKWISE, EN);
 		WindowState = SHUT_WINDOW;
 		break;
-#if _zqwdebug_
-	case 'c':
-		MyServoControl(180);
+#if _zqwdebug_Servo
+	case 'c':// 清洗
+		ServoFlag = 1;
+		delay(5000);
+		break;
+	case 'k':// 关闭清洗
+		ServoFlag = 0;
+		delay(5000);
+		break;
+#endif
+#if _zqwdebug_fan
+	case 'f':// 打开风扇
+		FanFlag = HIGH;
+		delay(5000);
+		break;
+	case 'g':// 关闭风扇
+		FanFlag = LOW;
+		delay(5000);
 		break;
 #endif
 	default:
 		break;
 	}
 	Serial.println();
+	if (ServoFlag)
+	{
+		for (int i(0); i < 180; i += 1)
+		{
+			MyServo.write(i);
+			delay(10);
+		}
+		for (int i(180); i >= 1; i -= 1)
+		{
+			MyServo.write(i);
+			delay(10);
+		}
+		ServoFlag++;
+		// 清洗4次后自动关闭清理
+		if (ServoFlag == 5)
+		{
+			ServoFlag = 0;
+		}
+	}
+	else
+	{
+		MyServo.write(LOW);
+	}
 
-
+	digitalWrite(6, FanFlag);
+	// 关闭步进电机
+	//MyStepperMotor.control(2, CLOCKWISE, UNEN);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////
 // function define
 
-#if _zqwdebug_
+#if false
 /**************************************************************************************
  * 函数名	：MyServoControl()
  * 功能		：伺服电机控制
@@ -203,7 +289,7 @@ void loop() {
  * 作者		：张群伟	南昌航空大学信息工程学院自动化系
  * 日期		：[3/29/2017]
  **************************************************************************************/
-void MyServoControl(int pos)
+inline void MyServoControl(int pos)
 {
 	int i = 0;
 	int count = 5;

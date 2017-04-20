@@ -12,7 +12,7 @@
 
 #include "smoke.h"
 
-#define SMOKE_VALUE_MAX   150			// 烟雾的最大值
+#define SMOKE_VALUE_MAX   350			// 烟雾的最大值
 
 ////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -43,10 +43,9 @@ void CSmoke::show(void)
 	Serial.print("***|	Smoke:  ");
 	Serial.print(m_value);
 	Serial.print("\t");
-	Serial.print("\t\tmax = 150 ");
+	Serial.print("\t\tmax = 350 ");
 	Serial.println();
-	//!delay(50);
-	delay(10);
+	delay(DELAY_VALUE);
 }
 
 /**************************************************************************************
